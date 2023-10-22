@@ -9,18 +9,23 @@ using System.Xml.Linq;
 
 
 Tests tests = new Tests(0.01);
-//tests.PrepareTest(new Point3d(5, 5, 5));
-//tests.PrepareTest(new Point3d(-5, 5, 5));
-//tests.PrepareTest(new Point3d(5, -5, 5));
-//tests.PrepareTest(new Point3d(5, 5, -5));
-//tests.PrepareTest(new Point3d(-5, -5, 5));
-//tests.PrepareTest(new Point3d(5, -5, -5));
-//tests.PrepareTest(new Point3d(-5, -5, 5));
-//tests.PrepareTest(new Point3d(-5, -5, -5));
-//tests.PrepareTest(new Point3d(57777, 57777, 57777));
+tests.PrepareTest(new Point3d(5, 5, 5));
+tests.PrepareTest(new Point3d(-5, 5, 5));
+tests.PrepareTest(new Point3d(5, -5, 5));
+tests.PrepareTest(new Point3d(5, 5, -5));
+tests.PrepareTest(new Point3d(-5, -5, 5));
+tests.PrepareTest(new Point3d(5, -5, -5));
+tests.PrepareTest(new Point3d(-5, -5, 5));
+tests.PrepareTest(new Point3d(-5, -5, -5));
+tests.PrepareTest(new Point3d(57777, 57777, 57777));
 tests.PrepareTest(new Point3d(0, 57777, 57777));
 tests.PrepareTest(new Point3d(9999999, 57777, 57777));
 tests.PrepareTest(new Point3d(57777, 0, -57777));
+tests.PrepareTest(new Point3d(-57777, -656747454, 57777));
+tests.PrepareTest(new Point3d(57777, 656747454, 57777));
+tests.PrepareTest(new Point3d(-57777, 656744, -5779877));
+tests.PrepareTest(new Point3d(-57867777, -6567474, 57777));
+
 
 
 tests.Go();
@@ -56,43 +61,50 @@ public class Tests
 
     public void Go()
     {
-        void CheckToleranceAndWrite(Point3d point3D, string Axis)
+        Console.BackgroundColor = ConsoleColor.White;
+        void ColorWrite(double pointWanted, double pointSolve, String axis)
         {
-            double value;
-            if (Axis == "X") value = point3D.X;
+            double value = pointWanted - pointSolve;
+            if (Math.Abs(value) > Math.Abs(Tolerance))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(" (pointWanted = " + pointWanted + "; ");
+                Console.Write("pointSolve = " + pointSolve + ";) ");
+                Console.Write("Погрешн по модулю = " + (Math.Abs(pointWanted) - Math.Abs(pointSolve)) + ";) ");
+                if (axis == "Z")
+                    Console.WriteLine("  " + axis + "=" + value);
+                else
+                    Console.Write("  " + axis + "=" + value);
+            }
             else
-            if (Axis == "Y") value = point3D.Y;
-            else
-                //if (Axis == "Z") 
-                value = point3D.Z;
-            if (value > Tolerance) Console.ForegroundColor = ConsoleColor.Red; else Console.ForegroundColor = ConsoleColor.White;
-            if (Axis == "Z") Console.WriteLine("  " + Axis + "=" + value);
-            else Console.Write("  " + Axis + "=" + value);
+            {
+                Console.ForegroundColor = ConsoleColor.Black;
+                if (axis == "Z")
+                    Console.WriteLine("  " + axis + "=" + value);
+                else
+                    Console.Write("  " + axis + "=" + value);
+            }
+        }
+        void CheckToleranceAndWrite(Point3d point3dWanted, Point3d point3dSolve)
+        {
+            ColorWrite(point3dWanted.X, point3dSolve.X, "X");
+
+            ColorWrite(point3dWanted.Y, point3dSolve.Y, "Y");
+
+            ColorWrite(point3dWanted.Z, point3dSolve.Z, "Z");
+            Console.ForegroundColor = ConsoleColor.Black;
         }
 
         foreach (var item in testPoints3d)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Искомая точка.  X=" + item.Point3dWanted.X + "  Y=" + item.Point3dWanted.Y + "  Z=" + item.Point3dWanted.Z);
-            Console.ForegroundColor = ConsoleColor.White;
-            Point3d point3D;
-            point3D = new Point3d(
-                item.Point3dWanted.X - item.Point3dSolve1.X,
-                item.Point3dWanted.Y - item.Point3dSolve1.Y,
-                item.Point3dWanted.Z - item.Point3dSolve1.Z);
-
+            Console.ForegroundColor = ConsoleColor.Black;
             Console.Write("Исходный алгоритм. Погрешн.");
-            CheckToleranceAndWrite(point3D, "X");
-            CheckToleranceAndWrite(point3D, "Y");
-            CheckToleranceAndWrite(point3D, "Z");
-            point3D = new Point3d(
-                 item.Point3dWanted.X - item.Point3dSolve2.X,
-                 item.Point3dWanted.Y - item.Point3dSolve2.Y,
-                 item.Point3dWanted.Z - item.Point3dSolve2.Z);
-            Console.WriteLine("Модифиц. алгоритм. Погрешн.");
-            CheckToleranceAndWrite(point3D, "X");
-            CheckToleranceAndWrite(point3D, "Y");
-            CheckToleranceAndWrite(point3D, "Z");
+            CheckToleranceAndWrite(item.Point3dWanted, item.Point3dSolve1);
+
+            Console.Write("Модифиц. алгоритм. Погрешн.");
+            CheckToleranceAndWrite(item.Point3dWanted, item.Point3dSolve2);
         }
     }
 }
