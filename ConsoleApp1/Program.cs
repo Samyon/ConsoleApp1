@@ -8,53 +8,78 @@ using System.Xml.Linq;
 
 
 
+Console.WriteLine("Исходный алгоритм");
+Point3d wantedPoint = new Point3d(5, 5, 5);
+FirstSolve.Solve
+Console.WriteLine("Погрешность X = " + (x - wantedPoint.X));
+Console.WriteLine("Погрешность Y = " + (y - wantedPoint.Y));
+Console.WriteLine("Погрешность Z = " + (z - wantedPoint.Z));
 
-var orig = new Point3d { X = 11, Y = 45252285285285, Z = -333 };
 
-var point = new OrigPoint(orig);
 
-var a = point.Distance(0, 0, 0);
-var b = point.Distance(0, 1, 0);
-var c = point.Distance(0, 0, 1);
 
-var y = (a * a - b * b + 1) / 2;
-var z = (a * a - c * c + 1) / 2;
-var x = Math.Sqrt(a * a - y * y - z * z);
-
-var test = point.Distance(x, y, z);
-if (test < 0.0000000001)
-{
-    Console.WriteLine(new { x, y, z });
-}
-else
-{
-    Console.WriteLine(new { x = -x, y, z });
-}
-
-Console.WriteLine("Погрешность X = " + (x - point.X));
-Console.WriteLine("Погрешность Y = " + (y - point.Y));
-Console.WriteLine("Погрешность Z = " + (z - point.Z));
-
+Console.WriteLine("");
+Console.WriteLine("");
+Console.WriteLine("");
+Console.WriteLine("Модифицированный алгоритм");
 var s = new Solve();
-s.Solve1(orig);
+s.Solve1(wantedPoint);
+
+public static class Tests
+{
+    public static void Go(List<Point3d> Pints3d)
+    {
 
 
+
+    }
+}
 
 public class Point3d
 {
-    public double X;
-    public double Y;
-    public double Z;
+    public readonly double X;
+    public readonly double Y;
+    public readonly double Z;
     public Point3d(double x, double y, double z)
     {
-        
+        X = x;
+        Y = y;
+        Z = z;
     }
 
 }
 
-public class Solve
+/// <summary>
+/// Исходный алгоритм
+/// </summary>
+public static class FirstSolve
 {
-    public Point3d Solve1(Point3d orig)
+    public static Point3d Solve(Point3d wantedPoint)
+    {
+        var a = Distance.Get(wantedPoint, new Point3d(0, 0, 0));
+        var b = Distance.Get(wantedPoint, new Point3d(0, 1, 0));
+        var c = Distance.Get(wantedPoint, new Point3d(0, 0, 1));
+
+        var y = (a * a - b * b + 1) / 2;
+        var z = (a * a - c * c + 1) / 2;
+        var x = Math.Sqrt(a * a - y * y - z * z);
+
+        var expectedPoint = new Point3d(x, y, z);
+        var test = Distance.Get(wantedPoint, expectedPoint);
+        if (test < 0.0000000001)
+        {
+            return expectedPoint;           
+        }
+        else
+        {
+            return new Point3d(-expectedPoint.X, expectedPoint.Y, expectedPoint.Z);
+        }
+    }
+}
+
+public class SecondSolve
+{
+    public Point3d Solve(Point3d orig)
     {
         var point = new OrigPoint(orig.X, orig.Y, orig.Z);
         var a = point.Distance(0, 0, 0);
@@ -79,7 +104,7 @@ public class Solve
         var d = point.Distance(0, 0, a);
         var z = (2 * a * a - d * d) / (2 * a);
 
-        Console.WriteLine("----------------------------- " );
+        Console.WriteLine("----------------------------- ");
         Console.WriteLine("Погрешность X = " + (x - orig.X));
         Console.WriteLine("Погрешность Y = " + (y - orig.Y));
         Console.WriteLine("Погрешность Z = " + (z - orig.Z));
@@ -104,26 +129,13 @@ public class Solve
 }
 
 
-public class OrigPoint
+public static class Distance
 {
-    public double X { get; }
-    public  double Y { get; }
-    public  double Z { get; }
-
-    public OrigPoint(OrigPoint point)
+    //функция, возвращающая расстояние до точки в 3х мерном пространстве
+    public static double Get(Point3d wanted, Point3d testPoint)
     {
-        X = point.X;
-        Y = point.Y;
-        Z = point.Z;
+        return Math.Sqrt(Math.Pow(wanted.X - testPoint.X, 2) + Math.Pow(wanted.Y - testPoint.Y, 2) + Math.Pow(wanted.Z - testPoint.Z, 2));
     }
-
-    public double Distance(double x, double y, double z)
-    {
-        return Math.Sqrt(Math.Pow(X - x, 2) + Math.Pow(Y - y, 2) + Math.Pow(Z - z, 2));
-    }
-
-
-
 }
 
 
