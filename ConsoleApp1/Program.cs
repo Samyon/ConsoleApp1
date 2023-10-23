@@ -70,7 +70,7 @@ public class Tests
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write(" (pointWanted = " + pointWanted + "; ");
                 Console.Write("pointSolve = " + pointSolve + ";) ");
-                Console.Write("Погрешн по модулю = " + (Math.Abs(pointWanted) - Math.Abs(pointSolve)) + ";) ");
+                Console.Write("Погрешн по модулю = " + Math.Abs(Math.Abs(pointWanted) - Math.Abs(pointSolve)) + ";) ");
                 if (axis == "Z")
                     Console.WriteLine("  " + axis + "=" + value);
                 else
